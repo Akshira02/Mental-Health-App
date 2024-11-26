@@ -1,0 +1,120 @@
+import SwiftUI
+
+struct ProfilePage: View {
+    // State variables for user data
+    @State private var profileImage: Image? = Image(systemName: "person.circle.fill")
+    @State private var name: String = "Ashwin Charles"
+    @State private var email: String = "ashwin@example.com"
+    @State private var bio: String = "Loves coding, design, and exploring the outdoors."
+    @State private var isEditing: Bool = false // Toggle editing state
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Profile Picture Section
+                ZStack {
+                    if let image = profileImage {
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 120, height: 120)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 3))
+                            .shadow(radius: 5)
+                    } else {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 120, height: 120)
+                            .foregroundColor(.gray)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray, lineWidth: 3))
+                            .shadow(radius: 5)
+                    }
+                }
+                .onTapGesture {
+                    // Action to change profile picture
+                    print("Change profile picture tapped!")
+                }
+                .padding()
+
+                // Form for Personal Details
+                Form {
+                    Section(header: Text("Personal Details")) {
+                        HStack {
+                            Text("Name:")
+                                .bold()
+                            TextField("Enter your name", text: $name)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .disabled(!isEditing)
+                        }
+                        
+                        HStack {
+                            Text("Email:")
+                                .bold()
+                            TextField("Enter your email", text: $email)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .disabled(!isEditing)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Bio:")
+                                .bold()
+                            TextEditor(text: $bio)
+                                .frame(height: 80)
+                                .border(Color.gray.opacity(0.5), width: 1)
+                                .cornerRadius(8)
+                                .disabled(!isEditing)
+                        }
+                    }
+                }
+                .frame(height: 300)
+                
+                // Edit and Save Buttons
+                HStack {
+                    Button(action: {
+                        isEditing.toggle()
+                    }) {
+                        Text(isEditing ? "Done" : "Edit")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(isEditing ? Color.green : Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    
+                    if isEditing {
+                        Button(action: {
+                            saveProfile()
+                        }) {
+                            Text("Save")
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(Color.orange)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                Spacer()
+            }
+            .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    // Save Profile Functionality
+    func saveProfile() {
+        print("Saving Profile:")
+        print("Name: \(name)")
+        print("Email: \(email)")
+        print("Bio: \(bio)")
+        // Here, you could add logic to persist the data, e.g., using UserDefaults or a backend API.
+    }
+}
+
+#Preview {
+    ProfilePage()
+}
