@@ -1,117 +1,116 @@
 import SwiftUI
 
 struct ProfilePage: View {
-    // State variables for user data
-    @State private var profileImage: Image? = Image(systemName: "person.circle.fill")
-    @State private var name: String = "Ashwin Charles"
-    @State private var email: String = "ashwin@example.com"
-    @State private var bio: String = "Loves coding, design, and exploring the outdoors."
-    @State private var isEditing: Bool = false // Toggle editing state
+    // Example data
+    let topMoods = ["Anxious", "Happy", "Stressed"]
+    @State private var progress = [
+        "20 more check-ins",
+        "5 new moo’ds logged",
+        "374 points earned"
+    ]
 
     var body: some View {
-        NavigationView {
-            VStack {
-                // Profile Picture Section
-                ZStack {
-                    if let image = profileImage {
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 120, height: 120)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.gray, lineWidth: 3))
-                            .shadow(radius: 5)
-                    } else {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120, height: 120)
-                            .foregroundColor(.gray)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.gray, lineWidth: 3))
-                            .shadow(radius: 5)
+        VStack(spacing: 20) {
+            // Top Moods Section
+            VStack(spacing: 10) {
+                Text("YOUR TOP MOO’DS")
+                    .font(.headline)
+                    .bold()
+                HStack(spacing: -20) { // Overlapping circles
+                    ForEach(topMoods, id: \.self) { mood in
+                        VStack {
+                            Circle()
+                                .frame(width: 80, height: 80)
+                                .foregroundColor(.gray.opacity(0.3))
+                            Text(mood)
+                                .font(.subheadline)
+                                .foregroundColor(.black)
+                        }
                     }
                 }
-                .onTapGesture {
-                    // Action to change profile picture
-                    print("Change profile picture tapped!")
+            }
+            
+            // Progress Section
+            VStack(alignment: .leading, spacing: 10) {
+                Text("YOUR PROGRESS")
+                    .font(.headline)
+                    .bold()
+                    .padding(.bottom, 10)
+                ForEach(progress, id: \.self) { item in
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text(item)
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                    }
                 }
-                .padding()
+            }
+            .padding(.horizontal)
 
-                // Form for Personal Details
-                Form {
-                    Section(header: Text("Personal Details")) {
-                        HStack {
-                            Text("Name:")
-                                .bold()
-                            TextField("Enter your name", text: $name)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .disabled(!isEditing)
-                        }
-                        
-                        HStack {
-                            Text("Email:")
-                                .bold()
-                            TextField("Enter your email", text: $email)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .disabled(!isEditing)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Bio:")
-                                .bold()
-                            TextEditor(text: $bio)
-                                .frame(height: 80)
-                                .border(Color.gray.opacity(0.5), width: 1)
-                                .cornerRadius(8)
-                                .disabled(!isEditing)
-                        }
-                    }
-                }
-                .frame(height: 300)
-                
-                // Edit and Save Buttons
+            // Weekly Stats Section
+            VStack(spacing: 10) {
+                Text("YOUR WEEKLY STATS")
+                    .font(.headline)
+                    .bold()
                 HStack {
                     Button(action: {
-                        isEditing.toggle()
+                        print("Previous stats tapped")
                     }) {
-                        Text(isEditing ? "Done" : "Edit")
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(isEditing ? Color.green : Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                        Image(systemName: "arrow.left")
                     }
-                    
-                    if isEditing {
-                        Button(action: {
-                            saveProfile()
-                        }) {
-                            Text("Save")
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .background(Color.orange)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+                    Spacer()
+                    // Example Bar Chart
+                    HStack(alignment: .bottom, spacing: 8) {
+                        ForEach([50, 80, 100, 60, 40], id: \.self) { value in
+                            Rectangle()
+                                .frame(width: 20, height: CGFloat(value))
+                                .foregroundColor(.gray.opacity(0.3))
                         }
                     }
+                    Spacer()
+                    Button(action: {
+                        print("Next stats tapped")
+                    }) {
+                        Image(systemName: "arrow.right")
+                    }
                 }
-                .padding(.horizontal)
-                
-                Spacer()
+                Text("Week of 11-16 to 11-23")
+                    .font(.caption)
+                    .foregroundColor(.gray)
             }
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
+            .padding()
 
-    // Save Profile Functionality
-    func saveProfile() {
-        print("Saving Profile:")
-        print("Name: \(name)")
-        print("Email: \(email)")
-        print("Bio: \(bio)")
-        // Here, you could add logic to persist the data, e.g., using UserDefaults or a backend API.
+            Spacer()
+
+            // Bottom Navigation Bar
+            HStack {
+                NavigationButton(iconName: "house.fill", label: "Home")
+                NavigationButton(iconName: "book.fill", label: "Journal")
+                NavigationButton(iconName: "chart.bar.fill", label: "Stats")
+                NavigationButton(iconName: "gearshape.fill", label: "Settings")
+            }
+            .padding(.horizontal)
+            .frame(height: 60)
+            .background(Color.gray.opacity(0.2))
+        }
+        .padding()
+    }
+}
+
+// Reusable Navigation Button
+struct NavigationButton: View {
+    let iconName: String
+    let label: String
+
+    var body: some View {
+        VStack {
+            Image(systemName: iconName)
+                .font(.system(size: 24))
+            Text(label)
+                .font(.caption)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
